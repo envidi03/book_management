@@ -8,11 +8,12 @@ const HOSTNAME = process.env.HOSTNAME || 'localhost';
 mongoose
     .connect(`${process.env.URL}${process.env.DBNAME}`)
     .then(() => {
-        console.log("Connect to mongodb using mongoose");
-    })
-    .catch((err) => console.log(`Connect to fail: ${err}`)
-    )
+        console.log("✅ Connect to MongoDB using mongoose");
 
-server.listen(PORT, () => {
-    console.log(`🚀 Server is running at http://${HOSTNAME}:${PORT}`);
-});
+        server.listen(PORT, () => {
+            console.log(`🚀 Server is running at http://${HOSTNAME}:${PORT}`);
+        });
+    })
+    .catch((err) => {
+        console.error("❌ Connect to MongoDB failed:", err.message);
+    });
