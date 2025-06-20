@@ -13,9 +13,19 @@ const orderSchema = mongoose.Schema(
                 unitPrice: Number
             }
         ],
-        totoAmount: Number
+        totoAmount: Number,
+        status: {
+            type: Number,
+            default: 0
+        },
+        processedAt: {
+            type: Date,
+            default: null
+        }
     },
     {
         timestamps: { createdAt: 'createdAt', updatedAt: false }
     }
 )
+
+module.exports = mongoose.model("Order", orderSchema)

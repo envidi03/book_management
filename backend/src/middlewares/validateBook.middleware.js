@@ -42,10 +42,10 @@ exports.validationCreateBook = [
 
 exports.validateUpdateBook = [
     body('title').optional().notEmpty().isString().withMessage("Title is required")
-        .custom(async (value) => {
-            const titleBook = await Book.findOne({ titel: value })
-            if (titleBook) {
-                throw new Error("Title is already exist")
+        .custom(async (value, { req }) => {
+            const titleBook = await Book.findOne({ title: value });
+            if (titleBook && titleBook._id.toString() !== req.params.id) {
+                throw new Error("Title is already exist");
             }
             return true;
         }),
@@ -53,14 +53,14 @@ exports.validateUpdateBook = [
     body('categoryId').optional().isMongoId().withMessage("Invalid category")
         .bail()
         .custom(async (value) => {
-            const categoryId = await Category.findById(value)
+            const categoryId = await Category.findById(value);
             if (!categoryId) {
-                throw new Error("Category does not exist")
+                throw new Error("Category does not exist");
             }
             return true;
         }),
     body('publisher').optional().notEmpty().isString().withMessage('Publisher is required'),
-    body('publishYear').optional().notEmpty().isInt({ min: 0 }).withMessage('Publish year must positive'),
+    body('publishYear').optional().notEmpty().isInt({ min: 0 }).withMessage('Publish year must be positive'),
     body('price').optional().notEmpty().isFloat({ min: 0 }).withMessage('Price must be positive, not empty and greater than 0'),
     body('quantity').optional().notEmpty().isInt({ min: 0 }).withMessage('Quantity must be positive, not empty and greater than 0'),
     body('coverImage').optional().isURL().withMessage('Url image is required'),
@@ -70,7 +70,7 @@ exports.validateUpdateBook = [
             return res.status(400).json({
                 message: "Validation failed",
                 errors: errors.array()
-            })
+            });
         }
         next();
     }

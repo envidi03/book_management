@@ -15,9 +15,30 @@ const authMiddleware = async (req, res, next) => {
         }
 
         const token = authHeader.split(' ')[1];
-        // const decoded = jwt.verify.(token, JWT_SECRET);
+        const decoded = jwt.verify(token, JWT_SECRET);
 
+        const user = await User.findById(decoded.id);
+        if (!user) {
+            res.status(401).json({ message: "Unauthorized: User not found" })
+        }
+
+        req.user = user;
+        next();
     } catch (error) {
-
+        res.status(403).json({
+            message: "Forbidden: Invalid Token",
+            error: error.message
+        })
     }
 }
+
+const roleMiddleware = (roles) => {
+    (req, res, next) => {
+        if (!req.user || !roles.includes(req.user.role)) {
+            res.status(403).json({ message: "Access denied: Insufficent role" })
+        }
+        next();
+    }
+}
+
+module.exports = { authMiddleware, roleMiddleware }

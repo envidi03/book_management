@@ -8,7 +8,6 @@ exports.getAllBook = async () => {
 exports.getBookByName = async (name) => {
     const normalized = removeAccent(name);
     const books = await Book.find();
-
     return books.filter(book => {
         return removeAccent(book.title || '').toLowerCase().includes(normalized.toLowerCase());
     })
